@@ -2,8 +2,8 @@
     "topn": "10",
     "language": "eng",
     "word2vec":{
-        "enabled": true,
-        "python_path": "/usr/bin/python",
+        "enabled": false,
+        "python_path": "python",
         "pretrained_word2vec_model": "~/Downloads/deps.words.bin",
         "server_port": 5000,
     },
