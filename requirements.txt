@@ -1,0 +1,15 @@
+# required by gensim
+gensim
+boto
+bz2file
+numpy
+requests
+scipy
+smart_open
+
+# required by nltk
+nltk
+
+# required by word2vec-api
+Flask==0.10.1
+Flask-RESTful==0.2.12

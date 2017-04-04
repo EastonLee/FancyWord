@@ -1,0 +1,7 @@
+[
+    {
+        "caption": "Fancy Word",
+        "id": "fancyword_context",
+        "command": "fancy_word"
+    }
+]

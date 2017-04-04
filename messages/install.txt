@@ -1,0 +1,19 @@
+This plugin helps you pick fancy word in your writing, it also provides a build-in dictionay.
+
+You just need put your cursor behind the word you want to replace, and hit CMD K + CMD F.
+
+There are two dictionary within: Word2Vec, Wordnet.
+
+Wordnet is enabled by default, it takes 11 MB space on disk.
+
+Word2Vec needs you to prepare some required files, but it also suggests much fancier words.
+
+Word2Vec is disable by default, if you wanna give it a shot, you need:
+
+1. install gensim: `pip install gensim flask-restful`
+
+2. Download pretrained Word2Vec model, you can download [here](https://drive.google.com/open?id=0Bz8u16o5sSTxSzVYVThGdUQ4Mjg) or [here](https://s3-ap-northeast-1.amazonaws.com/eastonlee/deps.words.bin), or you can find proper ones for yourself, but notice that pretrained model should be compatible with Gensim and be binary form.
+
+3. After you download pretrained model, enable Word2Vec in FancyWord.sublime-settings, and specify model file location in FancyWord.sublime-settings, and your Python executable absolute path.
+
+4. Restart SublimeText 3

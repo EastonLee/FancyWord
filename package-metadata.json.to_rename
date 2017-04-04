@@ -1,0 +1,8 @@
+{
+    "version": "0.0.1",
+    "dependencies": [],
+    "platforms": ["*"],
+    "description": "A Sublime Text 3 plugin that helps you replace your words with fancier ones.",
+    "sublime_text": "*",
+    "url": "https://github.com/easton042/FancyWord"
+}
