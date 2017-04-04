@@ -1,6 +1,10 @@
 [
     {
-        "caption": "Fancy Word",
+        "caption": "FancyWord: Replace a Word",
         "command": "fancy_word"
+    },
+    {
+        "caption": "FancyWord: Look Up a Word",
+        "command": "look_up_word"
     }
 ]

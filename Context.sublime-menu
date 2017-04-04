@@ -1,7 +1,12 @@
 [
     {
-        "caption": "Fancy Word",
-        "id": "fancyword_context",
+        "caption": "FancyWord: Replace a Word",
+        "id": "fancyword_context_1",
         "command": "fancy_word"
+    },
+    {
+        "caption": "FancyWord: Look Up a Word",
+        "id": "fancyword_context_2",
+        "command": "look_up_word"
     }
 ]

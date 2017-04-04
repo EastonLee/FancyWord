@@ -1,5 +1,5 @@
 {
-    "topn": "10",
+    "topn": 10,
     "language": "eng",
     "word2vec":{
         "enabled": false,

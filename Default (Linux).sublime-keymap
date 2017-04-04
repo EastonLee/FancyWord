@@ -1,0 +1,4 @@
+[  
+    { "keys": ["ctrl+k", "ctrl+f"], "command": "fancy_word" },
+    { "keys": ["ctrl+k", "ctrl+d"], "command": "look_up_word" }
+]   

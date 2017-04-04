@@ -5,12 +5,11 @@ import os
 import re
 import json
 import subprocess
-from subprocess import Popen
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "dependences"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "dependences"))
 from nltk.corpus import wordnet as wn
 
 if sublime.version() < '3000':
-    # for now, FancyWord only supports SublimeText 3
+    # nltk can't run on Python2.6.9, FancyWord only supports SublimeText 3
     _ST3 = False
 else:
     _ST3 = True
@@ -29,7 +28,7 @@ def start_subproc(c):
               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
-def plugin_loaded() -> None:
+def plugin_loaded():
     print('FancyWord loaded')
     if not os.path.exists(os.path.join(package_folder, 'Main.sublime-menu')):
         template_file = os.path.join(
@@ -45,24 +44,9 @@ def plugin_loaded() -> None:
             }))
 
 
-def plugin_unloaded() -> None:
+def plugin_unloaded():
     if p and not p.poll():
         p.terminate()
-
-# deprecated method, because gensim can't be run in plugin (Python3.3.6)
-
-
-def word2vec_topn_inproc(w, n):
-    from gensim.models.keyedvectors import KeyedVectors as k
-    from gensim.models.word2vec import Word2Vec as w
-    model = k.load_word2vec_format(
-        s['word2vec']['pretrained_word2vec_model'], binary=True)
-    try:
-        tops = model.most_similar_cosmul(positive=[w], topn=n)
-        tops = map(lambda x: x[0], tops)
-        return list(tops)[:n]
-    except KeyError as e:
-        return []
 
 
 def word2vec_topn_outproc(w, n):
@@ -117,7 +101,7 @@ class FancyWordCommand(sublime_plugin.TextCommand):
         # when word2vec-api server is dead, restart it
         if self.word2vec_enabled and (not p or p.poll()):
             # ['/usr/local/bin/python', '/Users/easton/Downloads/word2vec-api/word2vec-api.py', '--model', '~/Downloads/deps.words.bin', '--binary', 'true']
-            print('FancyWord: word2vec-api server will be started')
+            print('FancyWord: word2vec-api server is starting')
             word2vec_api_file_path = os.path.join(
                 package_folder, 'dependences/word2vec-api.py')
             self.word2vec_api_command = [self.word2vec_python_path, word2vec_api_file_path,
@@ -140,7 +124,7 @@ class FancyWordCommand(sublime_plugin.TextCommand):
             word2vec_rst = word2vec_topn_outproc(phrase, self.topn)
         except URLError:
             print('FancyWord: word2vec-api server can\'t be reachable')
-            print('FancyWord: Will try to start word2vec-api server next time')
+            print('FancyWord: Will start word2vec-api server')
             word2vec_rst = []
 
         wordnet_rst = wordnet_topn(phrase, self.topn, self.lang)
@@ -196,7 +180,9 @@ class LookUpWordCommand(sublime_plugin.TextCommand):
             return  # nothing selected
         s = sublime.load_settings("FancyWord.sublime-settings") or {}
         lang = s.get('language', 'eng')
-        definitions = {w.name(): w.definition() for w in wn.synsets(phrase, lang=lang)}
+        definitions = {}
+        for w in wn.synsets(phrase, lang=lang):
+            definitions[w.name()] = w.definition()
         if not definitions:
             sublime.status_message("FancyWord: can't find definition words for {}!".format(phrase))
             return
@@ -207,7 +193,7 @@ class LookUpWordCommand(sublime_plugin.TextCommand):
         else:
             self.print_doc(edit)
 
-    def print_popup(self, edit) -> None:
+    def print_popup(self, edit):
         """Show message in a popup
         """
 
@@ -218,7 +204,7 @@ class LookUpWordCommand(sublime_plugin.TextCommand):
         self.definitions = None
         self.view.show_tooltip(content)
 
-    def print_doc(self, edit: sublime.Edit) -> None:
+    def print_doc(self, edit):
         """Print the documentation string into a Sublime Text panel
         """
 
