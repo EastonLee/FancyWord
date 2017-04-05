@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Tokenizers
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 #         Steven Bird <stevenbird1@gmail.com>
 #         Trevor Cohn <tacohn@csse.unimelb.edu.au>
@@ -68,7 +68,9 @@ argument.  This differs from the conventions used by Python's
 from __future__ import unicode_literals
 
 import re
+import sre_constants
 
+from nltk.internals import compile_regexp_to_noncapturing
 from nltk.tokenize.api import TokenizerI
 from nltk.tokenize.util import regexp_span_tokenize
 from nltk.compat import python_2_unicode_compatible
@@ -83,8 +85,7 @@ class RegexpTokenizer(TokenizerI):
 
     :type pattern: str
     :param pattern: The pattern used to build this tokenizer.
-        (This pattern must not contain capturing parentheses;
-        Use non-capturing parentheses, e.g. (?:...), instead)
+        (This pattern may safely contain capturing parentheses.)
     :type gaps: bool
     :param gaps: True if this tokenizer's pattern should be used
         to find separators between tokens; False if this
@@ -113,7 +114,13 @@ class RegexpTokenizer(TokenizerI):
         
     def _check_regexp(self):
         if self._regexp is None:
-            self._regexp = re.compile(self._pattern, self._flags)
+            try:
+                # Remove capturing parentheses -- if the regexp contains any
+                # capturing parentheses, then the behavior of re.findall and
+                # re.split will change.                 
+                self._regexp = compile_regexp_to_noncapturing(self._pattern, self._flags)
+            except re.error as e:
+                raise ValueError('Error in regular expression %r: %s' % (self._pattern, e))
         
     def tokenize(self, text):
         self._check_regexp()
@@ -199,4 +206,7 @@ blankline_tokenize = BlanklineTokenizer().tokenize
 wordpunct_tokenize = WordPunctTokenizer().tokenize
 
 
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
 

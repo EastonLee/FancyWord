@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Chart Parser Application
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 #         Jean Mark Gawron <gawron@mail.sdsu.edu>
 #         Steven Bird <stevenbird1@gmail.com>
@@ -37,7 +37,7 @@ edge you wish to apply a rule to.
 # widget system.
 
 
-from __future__ import division
+
 import nltk.compat
 import pickle
 from tkinter.filedialog import asksaveasfilename, askopenfilename
@@ -1190,7 +1190,7 @@ class ChartView(object):
         self._chart_canvas.yview('moveto', 1.0)
         if self._chart_height != 0:
             self._chart_canvas.yview('moveto',
-                                     (y-dy)/self._chart_height)
+                                     float(y-dy)/self._chart_height)
 
     def _draw_edge(self, edge, lvl):
         """

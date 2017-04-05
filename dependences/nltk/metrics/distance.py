@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Distance Metrics
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 #         Steven Bird <stevenbird1@gmail.com>
 #         Tom Lippincott <tom@cs.columbia.edu>
@@ -20,7 +20,6 @@ As metrics, they must satisfy the following three requirements:
 """
 
 from __future__ import print_function
-from __future__ import division
 
 
 def _edit_dist_init(len1, len2):
@@ -34,7 +33,7 @@ def _edit_dist_init(len1, len2):
     return lev
 
 
-def _edit_dist_step(lev, i, j, s1, s2, substitution_cost=1, transpositions=False):
+def _edit_dist_step(lev, i, j, s1, s2, transpositions=False):
     c1 = s1[i - 1]
     c2 = s2[j - 1]
 
@@ -43,7 +42,7 @@ def _edit_dist_step(lev, i, j, s1, s2, substitution_cost=1, transpositions=False
     # skipping a character in s2
     b = lev[i][j - 1] + 1
     # substitution
-    c = lev[i - 1][j - 1] + (substitution_cost if c1 != c2 else 0)
+    c = lev[i - 1][j - 1] + (c1 != c2)
 
     # transposition
     d = c + 1  # never picked by default
@@ -55,7 +54,7 @@ def _edit_dist_step(lev, i, j, s1, s2, substitution_cost=1, transpositions=False
     lev[i][j] = min(a, b, c, d)
 
 
-def edit_distance(s1, s2, substitution_cost=1, transpositions=False):
+def edit_distance(s1, s2, transpositions=False):
     """
     Calculate the Levenshtein edit-distance between two strings.
     The edit distance is the number of characters that need to be
@@ -65,9 +64,6 @@ def edit_distance(s1, s2, substitution_cost=1, transpositions=False):
     "rain" -> "sain" -> "shin" -> "shine".  These operations could have
     been done in other orders, but at least three steps are needed.
 
-    Allows specifying the cost of substitution edits (e.g., "a" -> "b"),
-    because sometimes it makes sense to assign greater penalties to substitutions.
-
     This also optionally allows transposition edits (e.g., "ab" -> "ba"),
     though this is disabled by default.
 
@@ -75,7 +71,6 @@ def edit_distance(s1, s2, substitution_cost=1, transpositions=False):
     :param transpositions: Whether to allow transposition edits
     :type s1: str
     :type s2: str
-    :type substitution_cost: int
     :type transpositions: bool
     :rtype int
     """
@@ -87,8 +82,7 @@ def edit_distance(s1, s2, substitution_cost=1, transpositions=False):
     # iterate over the array
     for i in range(len1):
         for j in range(len2):
-            _edit_dist_step(lev, i + 1, j + 1, s1, s2,
-                            substitution_cost=substitution_cost, transpositions=transpositions)
+            _edit_dist_step(lev, i + 1, j + 1, s1, s2, transpositions=transpositions)
     return lev[len1][len2]
 
 
@@ -112,7 +106,7 @@ def jaccard_distance(label1, label2):
     """Distance metric comparing set-similarity.
 
     """
-    return (len(label1.union(label2)) - len(label1.intersection(label2)))/len(label1.union(label2))
+    return (len(label1.union(label2)) - len(label1.intersection(label2)))/float(len(label1.union(label2)))
 
 
 def masi_distance(label1, label2):
@@ -121,7 +115,7 @@ def masi_distance(label1, label2):
 
     >>> from nltk.metrics import masi_distance
     >>> masi_distance(set([1, 2]), set([1, 2, 3, 4]))
-    0.335
+    0.665...
 
     Passonneau 2006, Measuring Agreement on Set-Valued Items (MASI)
     for Semantic and Pragmatic Annotation.
@@ -140,7 +134,7 @@ def masi_distance(label1, label2):
     else:
         m = 0
 
-    return (1 - (len_intersection / float(len_union))) * m
+    return 1 - (len_intersection / float(len_union)) * m
 
 
 def interval_distance(label1,label2):
@@ -169,10 +163,10 @@ def presence(label):
 
 def fractional_presence(label):
     return lambda x, y:\
-        abs(((1.0 / len(x)) - (1.0 / len(y)))) * (label in x and label in y) \
+        abs((float(1.0 / len(x)) - float(1.0 / len(y)))) * (label in x and label in y) \
         or 0.0 * (label not in x and label not in y) \
-        or abs((1.0 / len(x))) * (label in x and label not in y) \
-        or ((1.0 / len(y))) * (label not in x and label in y)
+        or abs(float(1.0 / len(x))) * (label in x and label not in y) \
+        or (float(1.0 / len(y))) * (label not in x and label in y)
 
 
 def custom_distance(file):

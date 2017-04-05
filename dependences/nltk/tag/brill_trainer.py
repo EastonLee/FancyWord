@@ -11,10 +11,12 @@
 from __future__ import print_function, division
 
 import bisect
-import textwrap
 from collections import defaultdict
 
-from nltk.tag import untag, BrillTagger
+import textwrap
+
+from nltk.tag.util import untag
+from nltk.tag.brill import BrillTagger
 
 ######################################################################
 #  Brill Tagger Trainer
@@ -102,7 +104,7 @@ class BrillTaggerTrainer(object):
         #imports
         >>> from nltk.tbl.template import Template
         >>> from nltk.tag.brill import Pos, Word
-        >>> from nltk.tag import untag, RegexpTagger, BrillTaggerTrainer
+        >>> from nltk.tag import RegexpTagger, BrillTaggerTrainer
 
         #some data
         >>> from nltk.corpus import treebank
@@ -606,3 +608,6 @@ class BrillTaggerTrainer(object):
         print(prefix)
 
 
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)

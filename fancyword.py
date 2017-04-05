@@ -5,7 +5,8 @@ import os
 import re
 import json
 import subprocess
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "dependences"))
+sys.path.insert(0, os.path.join(os.path.dirname(
+    os.path.realpath(__file__)), "dependences"))
 from nltk.corpus import wordnet as wn
 
 if sublime.version() < '3000':
@@ -24,8 +25,8 @@ p = None
 
 def start_subproc(c):
     global p
-    p = Popen(c, stdin=subprocess.PIPE,
-              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(c, stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 def plugin_loaded():
@@ -144,7 +145,8 @@ class FancyWordCommand(sublime_plugin.TextCommand):
                                                 self.on_done,
                                                 sublime.MONOSPACE_FONT)
         else:
-            sublime.status_message("FancyWord: can't find similar words for {}!".format(phrase))
+            sublime.status_message(
+                "FancyWord: can't find similar words for {}!".format(phrase))
             self.on_done(-1)
 
     def on_done(self, index):
@@ -184,7 +186,8 @@ class LookUpWordCommand(sublime_plugin.TextCommand):
         for w in wn.synsets(phrase, lang=lang):
             definitions[w.name()] = w.definition()
         if not definitions:
-            sublime.status_message("FancyWord: can't find definition words for {}!".format(phrase))
+            sublime.status_message(
+                "FancyWord: can't find definition words for {}!".format(phrase))
             return
         self.definitions = '<br>'.join(
             ['<u>' + w + '</u>: ' + d for w, d in definitions.items()])

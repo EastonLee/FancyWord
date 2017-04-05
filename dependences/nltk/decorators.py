@@ -191,6 +191,8 @@ def memoize(func, *args):
         dic[args] = result
         return result
 
+if __name__ == "__main__":
+    import doctest; doctest.testmod()
 
 ##########################     LEGALESE    ###############################
 

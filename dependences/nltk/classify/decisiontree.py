@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Decision Tree Classifiers
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -10,7 +10,7 @@ A classifier model that decides which label to assign to a token on
 the basis of a tree structure, where branches correspond to conditions
 on feature values, and leaves correspond to label assignments.
 """
-from __future__ import print_function, unicode_literals, division
+from __future__ import print_function, unicode_literals
 
 from collections import defaultdict
 
@@ -69,7 +69,7 @@ class DecisionTreeClassifier(ClassifierI):
         for featureset, label in labeled_featuresets:
             if self.classify(featureset) != label:
                 errors += 1
-        return errors/len(labeled_featuresets)
+        return float(errors)/len(labeled_featuresets)
 
     def pretty_format(self, width=70, prefix='', depth=4):
         """
@@ -81,17 +81,17 @@ class DecisionTreeClassifier(ClassifierI):
         # [xx] display default!!
         if self._fname is None:
             n = width-len(prefix)-15
-            return '{0}{1} {2}\n'.format(prefix, '.'*n, self._label)
+            return '%s%s %s\n' % (prefix, '.'*n, self._label)
         s = ''
         for i, (fval, result) in enumerate(sorted(self._decisions.items())):
-            hdr = '{0}{1}={2}? '.format(prefix, self._fname, fval)
+            hdr = '%s%s=%s? ' % (prefix, self._fname, fval)
             n = width-15-len(hdr)
-            s += '{0}{1} {2}\n'.format(hdr, '.'*(n), result._label)
+            s += '%s%s %s\n' % (hdr, '.'*(n), result._label)
             if result._fname is not None and depth>1:
                 s += result.pretty_format(width, prefix+'  ', depth-1)
         if self._default is not None:
             n = width-len(prefix)-21
-            s += '{0}else: {1} {2}\n'.format(prefix, '.'*n, self._default._label)
+            s += '%selse: %s %s\n' % (prefix, '.'*n, self._default._label)
             if self._default._fname is not None and depth>1:
                 s += self._default.pretty_format(width, prefix+'  ', depth-1)
         return s
@@ -103,24 +103,24 @@ class DecisionTreeClassifier(ClassifierI):
         if statements.
         """
         if self._fname is None:
-            return "{0}return {1!r}\n".format(prefix, self._label)
+            return "%sreturn %r\n" % (prefix, self._label)
         s = ''
         for (fval, result) in sorted(self._decisions.items()):
-            s += '{0}if {1} == {2!r}: '.format(prefix, self._fname, fval)
+            s += '%sif %s == %r: ' % (prefix, self._fname, fval)
             if result._fname is not None and depth>1:
                 s += '\n'+result.pseudocode(prefix+'  ', depth-1)
             else:
-                s += 'return {0!r}\n'.format(result._label)
+                s += 'return %r\n' % result._label
         if self._default is not None:
             if len(self._decisions) == 1:
-                s += '{0}if {1} != {2!r}: '.format(prefix, self._fname,
+                s += '%sif %s != %r: '% (prefix, self._fname,
                                          list(self._decisions.keys())[0])
             else:
-                s += '{0}else: '.format(prefix)
+                s += '%selse: ' % (prefix,)
             if self._default._fname is not None and depth>1:
                 s += '\n'+self._default.pseudocode(prefix+'  ', depth-1)
             else:
-                s += 'return {0!r}\n'.format(self._default._label)
+                s += 'return %r\n' % self._default._label
         return s
 
     def __str__(self):
@@ -224,7 +224,7 @@ class DecisionTreeClassifier(ClassifierI):
                 best_error = stump_error
                 best_stump = stump
         if verbose:
-            print(('best stump for {:6d} toks uses {:20} err={:6.4f}'.format \
+            print(('best stump for %6d toks uses %-20s err=%6.4f' %
                    (len(labeled_featuresets), best_stump._fname, best_error)))
         return best_stump
 
@@ -267,12 +267,12 @@ class DecisionTreeClassifier(ClassifierI):
                     best_error = stump_error
                     best_stump = stump
         if best_stump._decisions:
-            descr = '{0}={1}'.format(best_stump._fname,
+            descr = '%s=%s' % (best_stump._fname,
                                list(best_stump._decisions.keys())[0])
         else:
             descr = '(default)'
         if verbose:
-            print(('best stump for {:6d} toks uses {:20} err={:6.4f}'.format \
+            print(('best stump for %6d toks uses %-20s err=%6.4f' %
                    (len(labeled_featuresets), descr, best_error)))
         return best_stump
 

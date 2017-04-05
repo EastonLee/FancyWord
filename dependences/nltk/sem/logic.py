@@ -2,7 +2,7 @@
 #
 # Author: Dan Garrette <dhgarrette@gmail.com>
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # URL: <http://nltk.org>
 # For license information, see LICENSE.TXT
 
@@ -17,7 +17,6 @@ import operator
 from collections import defaultdict
 from functools import reduce
 
-from nltk.util import Trie
 from nltk.internals import Counter
 from nltk.compat import (total_ordering, string_types,
                          python_2_unicode_compatible)
@@ -154,7 +153,7 @@ class LogicParser(object):
         """Split the data into tokens"""
         out = []
         mapping = {}
-        tokenTrie = Trie(self.get_all_symbols())
+        tokenTrie = StringTrie(self.get_all_symbols())
         token = ''
         data_idx = 0
         token_start_idx = data_idx
@@ -177,7 +176,7 @@ class LogicParser(object):
                     c = data[data_idx+len(symbol)]
                 else:
                     break
-            if Trie.LEAF in st:
+            if StringTrie.LEAF in st:
                 #token is a complete symbol
                 if token:
                     mapping[len(out)] = token_start_idx
@@ -1788,6 +1787,23 @@ class EqualityExpression(BinaryExpression):
 
 
 ### Utilities
+
+class StringTrie(defaultdict):
+    LEAF = "<leaf>"
+
+    def __init__(self, strings=None):
+        defaultdict.__init__(self, StringTrie)
+        if strings:
+            for string in strings:
+                self.insert(string)
+
+    def insert(self, string):
+        if len(string):
+            self[string[0]].insert(string[1:])
+        else:
+            #mark the string is complete
+            self[StringTrie.LEAF] = None
+
 
 class LogicalExpressionException(Exception):
     def __init__(self, index, message):

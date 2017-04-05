@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Some texts for exploration in chapter 1 of the book
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #
 # URL: <http://nltk.org/>
@@ -10,7 +10,6 @@ from __future__ import print_function
 from nltk.corpus import (gutenberg, genesis, inaugural,
                          nps_chat, webtext, treebank, wordnet)
 from nltk.text import Text
-from nltk.probability import FreqDist
 
 print("*** Introductory Examples for the NLTK Book ***")
 print("Loading text1, ..., text9 and sent1, ..., sent9")
@@ -32,8 +31,7 @@ print("text4:", text4.name)
 text5 = Text(nps_chat.words(), name="Chat Corpus")
 print("text5:", text5.name)
 
-text6 = Text(webtext.words('grail.txt'),
-             name="Monty Python and the Holy Grail")
+text6 = Text(webtext.words('grail.txt'), name="Monty Python and the Holy Grail")
 print("text6:", text6.name)
 
 text7 = Text(treebank.words(), name="Wall Street Journal")
@@ -44,7 +42,6 @@ print("text8:", text8.name)
 
 text9 = Text(gutenberg.words('chesterton-thursday.txt'))
 print("text9:", text9.name)
-
 
 def texts():
     print("text1:", text1.name)
@@ -76,7 +73,6 @@ sent8 = ['25', 'SEXY', 'MALE', ',', 'seeks', 'attrac', 'older',
 sent9 = ["THE", "suburb", "of", "Saffron", "Park", "lay", "on", "the",
          "sunset", "side", "of", "London", ",", "as", "red", "and",
          "ragged", "as", "a", "cloud", "of", "sunset", "."]
-
 
 def sents():
     print("sent1:", " ".join(sent1))

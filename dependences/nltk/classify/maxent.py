@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Maximum Entropy Classifiers
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 #         Dmitry Chichkov <dchichkov@gmail.com> (TypedMaxentFeatureEncoding)
 # URL: <http://nltk.org/>
@@ -1022,6 +1022,11 @@ def train_maxent_classifier_with_gis(train_toks, trace=3, encoding=None,
     log_empirical_fcount = numpy.log2(empirical_fcount)
     del empirical_fcount
 
+    # Old log-likelihood and accuracy; used to check if the change
+    # in log-likelihood or accuracy is sufficient to indicate convergence.
+    ll_old = None
+    acc_old = None
+
     if trace > 0:
         print('  ==> Training (%d iterations)' % cutoffs['max_iter'])
     if trace > 2:
@@ -1144,6 +1149,11 @@ def train_maxent_classifier_with_iis(train_toks, trace=3, encoding=None,
         print()
         print('      Iteration    Log Likelihood    Accuracy')
         print('      ---------------------------------------')
+
+    # Old log-likelihood and accuracy; used to check if the change
+    # in log-likelihood or accuracy is sufficient to indicate convergence.
+    ll_old = None
+    acc_old = None
 
     # Train the classifier.
     try:

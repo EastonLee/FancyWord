@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: Context Free Grammars
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
 #         Jason Narad <jason.narad@gmail.com>
@@ -68,7 +68,7 @@ The operation of replacing the left hand side (*lhs*) of a production
 with the right hand side (*rhs*) in a tree (*tree*) is known as
 "expanding" *lhs* to *rhs* in *tree*.
 """
-from __future__ import print_function, unicode_literals, division 
+from __future__ import print_function, unicode_literals
 
 import re
 
@@ -1130,7 +1130,7 @@ def induce_pcfg(start, productions):
         pcount[prod]       = pcount.get(prod,       0) + 1
 
     prods = [ProbabilisticProduction(p.lhs(), p.rhs(),
-                                prob=pcount[p] / lcount[p.lhs()])
+                                prob=float(pcount[p]) / lcount[p.lhs()])
              for p in pcount]
     return PCFG(start, prods)
 

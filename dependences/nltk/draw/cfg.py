@@ -1,6 +1,6 @@
 # Natural Language Toolkit: CFG visualization
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -108,7 +108,7 @@ underscores (_).  Nonterminals are colored blue.  If you place the
 mouse over any nonterminal, then all occurrences of that nonterminal
 will be highlighted.
 
-Terminals must be surrounded by single quotes (') or double
+Termianals must be surrounded by single quotes (') or double
 quotes(\").  For example, "dog" and "New York" are terminals.
 Currently, the string within the quotes must consist of alphanumeric
 characters, underscores, and spaces.

@@ -1,6 +1,6 @@
 # Natural Language Toolkit: RTE Classifier
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Ewan Klein <ewan@inf.ed.ac.uk>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -36,7 +36,7 @@ def lemmatize(word):
     """
     Use morphy from WordNet to find the base form of verbs.
     """
-    lemma = nltk.corpus.wordnet.morphy(word, pos=nltk.corpus.wordnet.VERB)
+    lemma = nltk.corpus.wordnet.morphy(word, pos='verb')
     if lemma is not None:
         return lemma
     return word
@@ -58,10 +58,10 @@ class RTEFeatureExtractor(object):
 
         self.negwords = set(['no', 'not', 'never', 'failed', 'rejected',
                              'denied'])
-        # Try to tokenize so that abbreviations, monetary amounts, email
-        # addresses, URLs are single tokens.
+        # Try to tokenize so that abbreviations like U.S.and monetary amounts
+        # like "$23.00" are kept as tokens.
         from nltk.tokenize import RegexpTokenizer
-        tokenizer = RegexpTokenizer('([\w.@:/])+|\w+|\$[\d.]+')
+        tokenizer = RegexpTokenizer('([A-Z]\.)+|\w+|\$[\d\.]+')
 
         #Get the set of word types for text and hypothesis
         self.text_tokens = tokenizer.tokenize(rtepair.text)

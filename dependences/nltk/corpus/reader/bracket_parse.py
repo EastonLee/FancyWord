@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Penn Treebank Reader
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
@@ -25,10 +25,8 @@ EMPTY_BRACKETS = re.compile(r'\s*\(\s*\(')
 
 class BracketParseCorpusReader(SyntaxCorpusReader):
     """
-    Reader for corpora that consist of parenthesis-delineated parse trees,
-    like those found in the "combined" section of the Penn Treebank,
-    e.g. "(S (NP (DT the) (JJ little) (NN dog)) (VP (VBD barked)))".
-
+    Reader for corpora that consist of parenthesis-delineated parse
+    trees.
     """
     def __init__(self, root, fileids, comment_char=None,
                  detect_blocks='unindented_paren', encoding='utf8',

@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Texts
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
@@ -443,13 +443,6 @@ class Text(object):
         """
         from nltk.draw import dispersion_plot
         dispersion_plot(self, words)
-        
-    def generate(self, words):
-        """
-        Issues a reminder to users following the book online
-        """
-        import warnings
-        warnings.warn('The generate() method is no longer available.', DeprecationWarning)
 
     def plot(self, *args):
         """
@@ -551,7 +544,7 @@ class TextCollection(Text):
     Iterating over a TextCollection produces all the tokens of all the
     texts in order.
     """
-    def __init__(self, source):
+    def __init__(self, source, name=None):
         if hasattr(source, 'words'): # bridge to the text corpus reader
             source = [source.words(f) for f in source.fileids()]
 
@@ -559,11 +552,11 @@ class TextCollection(Text):
         Text.__init__(self, LazyConcatenation(source))
         self._idf_cache = {}
 
-    def tf(self, term, text):
+    def tf(self, term, text, method=None):
         """ The frequency of the term in text. """
         return text.count(term) / len(text)
 
-    def idf(self, term):
+    def idf(self, term, method=None):
         """ The number of texts in the corpus divided by the
         number of texts that the term appears in.
         If a term does not appear in the corpus, 0.0 is returned. """
@@ -572,7 +565,7 @@ class TextCollection(Text):
         if idf is None:
             matches = len([True for text in self._texts if term in text])
             # FIXME Should this raise some kind of error instead?
-            idf = (log(len(self._texts) / matches) if matches else 0.0)
+            idf = (log(float(len(self._texts)) / matches) if matches else 0.0)
             self._idf_cache[term] = idf
         return idf
 

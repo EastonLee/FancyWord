@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: Interface to the CRFSuite Tagger
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Long Duong <longdt219@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -111,11 +111,7 @@ class CRFTagger(TaggerI):
         """ 
         token = tokens[idx]
         
-        feature_list = []
-        
-        if not token:
-            return feature_list
-            
+        feature_list = []  
         # Capitalization 
         if token[0].isupper():
             feature_list.append('CAPITALIZATION')
@@ -202,3 +198,6 @@ class CRFTagger(TaggerI):
         
         return self.tag_sents([tokens])[0]
 
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)

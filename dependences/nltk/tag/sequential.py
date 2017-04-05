@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Sequential Backoff Taggers
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 #         Steven Bird <stevenbird1@gmail.com> (minor additions)
 #         Tiago Tresoldi <tresoldi@users.sf.net> (original affix tagger)
@@ -22,7 +22,7 @@ from __future__ import print_function, unicode_literals
 import re
 
 from nltk.probability import ConditionalFreqDist
-from nltk.classify import NaiveBayesClassifier
+from nltk.classify.naivebayes import NaiveBayesClassifier
 from nltk.compat import python_2_unicode_compatible
 
 from nltk.tag.api import TaggerI, FeaturesetTaggerI
@@ -216,7 +216,7 @@ class DefaultTagger(SequentialBackoffTagger):
     """
     A tagger that assigns the same tag to every token.
 
-        >>> from nltk.tag import DefaultTagger
+        >>> from nltk.tag.sequential import DefaultTagger
         >>> default_tagger = DefaultTagger('NN')
         >>> list(default_tagger.tag('This is a test'.split()))
         [('This', 'NN'), ('is', 'NN'), ('a', 'NN'), ('test', 'NN')]
@@ -308,7 +308,7 @@ class UnigramTagger(NgramTagger):
     corpus, and then uses that information to assign tags to new tokens.
 
         >>> from nltk.corpus import brown
-        >>> from nltk.tag import UnigramTagger
+        >>> from nltk.tag.sequential import UnigramTagger
         >>> test_sent = brown.sents(categories='news')[0]
         >>> unigram_tagger = UnigramTagger(brown.tagged_sents(categories='news')[:500])
         >>> for tok, tag in unigram_tagger.tag(test_sent):
@@ -491,7 +491,7 @@ class RegexpTagger(SequentialBackoffTagger):
     of speech tag:
 
         >>> from nltk.corpus import brown
-        >>> from nltk.tag import RegexpTagger
+        >>> from nltk.tag.sequential import RegexpTagger
         >>> test_sent = brown.sents(categories='news')[0]
         >>> regexp_tagger = RegexpTagger(
         ...     [(r'^-?[0-9]+(.[0-9]+)?$', 'CD'),   # cardinal numbers
@@ -529,27 +529,34 @@ class RegexpTagger(SequentialBackoffTagger):
         """
         """
         SequentialBackoffTagger.__init__(self, backoff)
-        self._regexs = [(re.compile(regexp), tag,) for regexp, tag in regexps]
+        labels = ['g'+str(i) for i in range(len(regexps))]
+        tags = [tag for regex, tag in regexps]
+        self._map = dict(zip(labels, tags))
+        regexps_labels = [(regex, label) for ((regex,tag),label) in zip(regexps,labels)]
+        self._regexs = re.compile('|'.join('(?P<%s>%s)' % (label, regex) for regex,label in regexps_labels))
+        self._size=len(regexps)
 
     def encode_json_obj(self):
-        return [(regexp.patten, tag,) for regexp, tag in self._regexs], self.backoff
+        return self._map, self._regexs.pattern, self._size, self.backoff
 
     @classmethod
     def decode_json_obj(cls, obj):
-        regexps, backoff = obj
+        _map, _regexs, _size, backoff = obj
         self = cls(())
-        self._regexs = [(re.compile(regexp), tag,) for regexp, tag in regexps]
+        self._map = _map
+        self._regexs = re.compile(_regexs)
+        self._size = _size
         SequentialBackoffTagger.__init__(self, backoff)
         return self
 
     def choose_tag(self, tokens, index, history):
-        for regexp, tag in self._regexs:
-            if re.match(regexp, tokens[index]):
-                return tag
+        m = self._regexs.match(tokens[index])
+        if m:
+          return self._map[m.lastgroup]
         return None
 
     def __repr__(self):
-        return '<Regexp Tagger: size=%d>' % len(self._regexs)
+        return '<Regexp Tagger: size=%d>' % self._size
 
 
 @python_2_unicode_compatible
@@ -734,3 +741,6 @@ class ClassifierBasedPOSTagger(ClassifierBasedTagger):
         return features
 
 
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: GDFA word alignment symmetrization
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Authors: Liling Tan
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -129,3 +129,7 @@ def grow_diag_final_and(srclen, trglen, e2f, f2e):
     final_and(f2e)
     return alignment
 
+# run doctests
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

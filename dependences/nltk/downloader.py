@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Corpus & Model Downloader
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -54,9 +54,9 @@ NLTK Download Server
 Before downloading any packages, the corpus and module downloader
 contacts the NLTK download server, to retrieve an index file
 describing the available packages.  By default, this index file is
-loaded from ``https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/index.xml``.
-If necessary, it is possible to create a new ``Downloader`` object,
-specifying a different URL for the package index file.
+loaded from ``http://www.nltk.org/nltk_data/``.  If necessary, it is
+possible to create a new ``Downloader`` object, specifying a different
+URL for the package index file.
 
 Usage::
 
@@ -159,7 +159,7 @@ they didn't download that model.
 default: unzip or not?
 
 """
-import time, os, zipfile, sys, textwrap, threading, itertools, shutil
+import time, os, zipfile, sys, textwrap, threading, itertools
 from hashlib import md5
 
 try:
@@ -377,7 +377,7 @@ class Downloader(object):
        server index will be considered 'stale,' and will be
        re-downloaded."""
 
-    DEFAULT_URL = 'https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/index.xml'
+    DEFAULT_URL = 'http://www.nltk.org/nltk_data/'
     """The default URL for the NLTK data server's index.  An
        alternative URL can be specified when creating a new
        ``Downloader`` object."""
@@ -568,7 +568,7 @@ class Downloader(object):
             if isinstance(item, Package):
                 delta = 1./num_packages
             else:
-                delta = len(item.packages)/num_packages
+                delta = float(len(item.packages))/num_packages
             for msg in self.incr_download(item, download_dir, force):
                 if isinstance(msg, ProgressMessage):
                     yield ProgressMessage(progress + msg.progress*delta)
@@ -613,7 +613,7 @@ class Downloader(object):
             infile = compat.urlopen(info.url)
             with open(filepath, 'wb') as outfile:
                 #print info.size
-                num_blocks = max(1, info.size/(1024*16))
+                num_blocks = max(1, float(info.size)/(1024*16))
                 for block in itertools.count():
                     s = infile.read(1024*16) # 16k blocks.
                     outfile.write(s)
@@ -756,7 +756,7 @@ class Downloader(object):
         else:
             filepath = os.path.join(download_dir, info.filename)
             if download_dir != self._download_dir:
-                return self._pkg_status(info, filepath)
+                status = self._pkg_status(info, filepath)
             else:
                 if info.id not in self._status_cache:
                     self._status_cache[info.id] = self._pkg_status(info,
@@ -1118,7 +1118,7 @@ class DownloaderShell(object):
                 if new_url in ('', 'x', 'q', 'X', 'Q'):
                     print('  Cancelled!')
                 else:
-                    if not new_url.startswith(('http://', 'https://')):
+                    if not new_url.startswith('http://'):
                         new_url = 'http://'+new_url
                     try: self._ds.url = new_url
                     except Exception as e:
@@ -2030,12 +2030,13 @@ def _unzip_iter(filename, root, verbose=True):
     for i, filename in enumerate(filelist):
         filepath = os.path.join(root, *filename.split('/'))
 
-        try:
-            with open(filepath, 'wb') as dstfile, zf.open(filename) as srcfile:
-                shutil.copyfileobj(srcfile, dstfile)
-        except Exception as e:
-            yield ErrorMessage(filename, e)
-            return
+        with open(filepath, 'wb') as outfile:
+            try:
+                contents = zf.read(filename)
+            except Exception as e:
+                yield ErrorMessage(filename, e)
+                return
+            outfile.write(contents)
 
         if verbose and (i*10/len(filelist) > (i-1)*10/len(filelist)):
             sys.stdout.write('.')
@@ -2092,8 +2093,7 @@ def build_index(root, base_url):
         pkg_xml.set('checksum', '%s' % md5_hexdigest(zf.filename))
         pkg_xml.set('subdir', subdir)
         #pkg_xml.set('svn_revision', _svn_revision(zf.filename))
-        if not pkg_xml.get('url'):
-            pkg_xml.set('url', url)
+        pkg_xml.set('url', url)
 
         # Record the package.
         packages.append(pkg_xml)

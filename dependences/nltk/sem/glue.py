@@ -2,17 +2,17 @@
 #
 # Author: Dan Garrette <dhgarrette@gmail.com>
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
 from __future__ import print_function, division, unicode_literals
 
 import os
-from itertools import chain
 
 import nltk
 from nltk.internals import Counter
 from nltk.compat import string_types
+from nltk.corpus import brown
 from nltk.tag import UnigramTagger, BigramTagger, TrigramTagger, RegexpTagger
 from nltk.sem.logic import (Expression, Variable, VariableExpression,
                             LambdaExpression, AbstractVariableExpression)
@@ -103,10 +103,6 @@ class GlueFormula(object):
 
     def __ne__(self, other):
         return not self == other
-
-    # sorting for use in doctests which must be deterministic
-    def __lt__(self, other):
-        return str(self) < str(other)
 
     def __str__(self):
         assert isinstance(self.indices, set)
@@ -234,15 +230,14 @@ class GlueDict(dict):
 
     def to_glueformula_list(self, depgraph, node=None, counter=None, verbose=False):
         if node is None:
-            # TODO: should it be depgraph.root? Is this code tested?
             top = depgraph.nodes[0]
-            depList = list(chain(*top['deps'].values()))
+            depList = sum(list(top['deps'].values()), [])
             root = depgraph.nodes[depList[0]]
-
+            #print (root) 
             return self.to_glueformula_list(depgraph, root, Counter(), verbose)
 
         glueformulas = self.lookup(node, depgraph, counter)
-        for dep_idx in chain(*node['deps'].values()):
+        for dep_idx in sum(list(node['deps'].values()), []):
             dep = depgraph.nodes[dep_idx]
             glueformulas.extend(self.to_glueformula_list(depgraph, dep, counter, verbose))
         return glueformulas
@@ -286,7 +281,7 @@ class GlueDict(dict):
     def _lookup_semtype_option(self, semtype, node, depgraph):
         relationships = frozenset(
             depgraph.nodes[dep]['rel'].lower()
-            for dep in chain(*node['deps'].values())
+            for dep in sum(list(node['deps'].values()), [])
             if depgraph.nodes[dep]['rel'].lower() not in OPTIONAL_RELATIONSHIPS
         )
 
@@ -419,7 +414,7 @@ class GlueDict(dict):
         """
         deps = [
             depgraph.nodes[dep]
-            for dep in chain(*node['deps'].values())
+            for dep in sum(list(node['deps'].values()), [])
             if depgraph.nodes[dep]['rel'].lower() == rel.lower()
         ]
 
@@ -545,21 +540,13 @@ class Glue(object):
         return [self.gfl_to_compiled(gfl) for gfl in gfls]
 
     def dep_parse(self, sentence):
-        """
-        Return a dependency graph for the sentence.
-
-        :param sentence: the sentence to be parsed
-        :type sentence: list(str)
-        :rtype: DependencyGraph
-        """
-
         #Lazy-initialize the depparser
         if self.depparser is None:
             from nltk.parse import MaltParser
             self.depparser = MaltParser(tagger=self.get_pos_tagger())
         if not self.depparser._trained:
             self.train_depparser()
-        return self.depparser.parse(sentence, verbose=self.verbose)
+        return [self.depparser.parse(sentence, verbose=self.verbose)]
 
     def depgraph_to_glue(self, depgraph):
         return self.get_glue_dict().to_glueformula_list(depgraph)
@@ -581,7 +568,6 @@ class Glue(object):
         return return_list
 
     def get_pos_tagger(self):
-        from nltk.corpus import brown
         regexp_tagger = RegexpTagger(
             [(r'^-?[0-9]+(.[0-9]+)?$', 'CD'),   # cardinal numbers
              (r'(The|the|A|a|An|an)$', 'AT'),   # articles

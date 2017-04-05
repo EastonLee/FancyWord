@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Table widget
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -8,8 +8,6 @@
 """
 Tkinter widgets for displaying multi-column listboxes and tables.
 """
-
-from __future__ import division
 
 import nltk.compat
 import operator
@@ -186,12 +184,12 @@ class MultiListbox(Frame):
 
     def _resize_column_motion_cb(self, event):
         lb = self._listboxes[self._resize_column_index]
-        charwidth = lb.winfo_width() / lb['width']
+        charwidth = lb.winfo_width() / float(lb['width'])
 
         x1 = event.x + event.widget.winfo_x()
         x2 = lb.winfo_x() + lb.winfo_width()
 
-        lb['width'] = max(3, lb['width'] + (x1-x2) // charwidth)
+        lb['width'] = max(3, lb['width'] + int((x1-x2)/charwidth))
 
     def _resize_column_buttonrelease_cb(self, event):
         event.widget.unbind('<ButtonRelease-%d>' % event.num)
@@ -808,7 +806,7 @@ class Table(object):
         """
         Delete the ``row_index``th row from this table.
         """
-        if isinstance(row_index, slice):
+        if isinstance(index, slice):
             raise ValueError('Slicing not supported')
         if isinstance(row_index, tuple) and len(row_index)==2:
             raise ValueError('Cannot delete a single cell!')
@@ -1070,18 +1068,12 @@ def demo():
         if pos[0] != 'N': continue
         word = word.lower()
         for synset in wordnet.synsets(word):
-            try:
-                hyper_def = synset.hypernyms()[0].definition()
-            except:
-                hyper_def = '*none*'
-            try:
-                hypo_def = synset.hypernyms()[0].definition()
-            except:
-                hypo_def = '*none*'
+            hyper = (synset.hypernyms()+[''])[0]
+            hypo = (synset.hyponyms()+[''])[0]
             table.append([word,
-                          synset.definition(),
-                          hyper_def,
-                          hypo_def])
+                          getattr(synset, 'definition', '*none*'),
+                          getattr(hyper, 'definition', '*none*'),
+                          getattr(hypo, 'definition', '*none*')])
 
     table.columnconfig('Word', background='#afa')
     table.columnconfig('Synset', background='#efe')

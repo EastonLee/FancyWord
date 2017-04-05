@@ -1,6 +1,6 @@
 # Natural Language Toolkit (NLTK)
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Authors: Steven Bird <stevenbird1@gmail.com>
 #          Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
@@ -19,9 +19,9 @@ from __future__ import print_function, absolute_import
 
 import os
 
-# //////////////////////////////////////////////////////
-# Metadata
-# //////////////////////////////////////////////////////
+##//////////////////////////////////////////////////////
+##  Metadata
+##//////////////////////////////////////////////////////
 
 # Version.  For each new release, the version number should be updated
 # in the file VERSION.
@@ -35,13 +35,13 @@ except NameError:
 except IOError as ex:
     __version__ = "unknown (%s)" % ex
 
-if __doc__ is not None:  # fix for the ``python -OO``
+if __doc__ is not None: # fix for the ``python -OO``
     __doc__ += '\n@version: ' + __version__
 
 
 # Copyright notice
 __copyright__ = """\
-Copyright (C) 2001-2017 NLTK Project.
+Copyright (C) 2001-2015 NLTK Project.
 
 Distributed and Licensed under the Apache License, Version 2.0,
 which is included by reference.
@@ -84,7 +84,7 @@ __classifiers__ = [
     'Topic :: Text Processing :: General',
     'Topic :: Text Processing :: Indexing',
     'Topic :: Text Processing :: Linguistic',
-]
+    ]
 
 from nltk.internals import config_java
 
@@ -125,6 +125,7 @@ from nltk.jsontags import *
 # PACKAGES
 ###########################################################
 
+from nltk.align import *
 from nltk.chunk import *
 from nltk.classify import *
 from nltk.inference import *
@@ -132,7 +133,6 @@ from nltk.metrics import *
 from nltk.parse import *
 from nltk.tag import *
 from nltk.tokenize import *
-from nltk.translate import *
 from nltk.sem import *
 from nltk.stem import *
 
@@ -174,11 +174,10 @@ else:
 # they override the same names inadvertently imported
 # from a subpackage)
 
-from nltk import ccg, chunk, classify, collocations
+from nltk import align, ccg, chunk, classify, collocations
 from nltk import data, featstruct, grammar, help, inference, metrics
 from nltk import misc, parse, probability, sem, stem, wsd
-from nltk import tag, tbl, text, tokenize, translate, tree, treetransforms, util
-
+from nltk import tag, tbl, text, tokenize, tree, treetransforms, util
 
 # override any accidentally imported demo
 def demo():

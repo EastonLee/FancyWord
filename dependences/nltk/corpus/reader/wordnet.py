@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: WordNet
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Steven Bethard <Steven.Bethard@colorado.edu>
 #         Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
 #         Nitin Madnani <nmadnani@ets.org>
-#         Nasruddin A’aidil Shari
-#         Sim Wei Ying Geraldine
-#         Soe Lynn
-#         Francis Bond <bond@ieee.org>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
 
@@ -22,11 +18,6 @@ such as hypernyms, hyponyms, synonyms, antonyms etc.
 
 For details about WordNet see:
 http://wordnet.princeton.edu/
-
-This module also allows you to find lemmas in languages 
-other than English from the Open Multilingual Wordnet
-http://compling.hss.ntu.edu.sg/omw/
-
 """
 
 from __future__ import print_function, unicode_literals
@@ -261,7 +252,7 @@ class Lemma(_WordNetObject):
         self._frame_ids = []
         self._lexname_index = lexname_index
         self._lex_id = lex_id
-        self._lang = 'eng'
+        self._lang = "en"
 
         self._key = None # gets set later.
 
@@ -419,22 +410,21 @@ class Synset(_WordNetObject):
         elif self._pos == VERB:
             return True
 
-    def lemma_names(self, lang='eng'):
+    def lemma_names(self, lang='en'):
         '''Return all the lemma_names associated with the synset'''
-        if lang=='eng':
+        if lang=='en':
             return self._lemma_names
         else:
             self._wordnet_corpus_reader._load_lang_data(lang)
 
             i = self._wordnet_corpus_reader.ss2of(self)
-            if i in self._wordnet_corpus_reader._lang_data[lang][0]:
-                return self._wordnet_corpus_reader._lang_data[lang][0][i]
-            else:
-                return []
+            for x in self._wordnet_corpus_reader._lang_data[lang][0].keys():
+                if x == i:
+                    return self._wordnet_corpus_reader._lang_data[lang][0][x]
                 
-    def lemmas(self, lang='eng'):
+    def lemmas(self, lang='en'):
         '''Return all the lemma objects associated with the synset'''
-        if lang=='eng':
+        if lang=='en':
             return self._lemmas
         else:
             self._wordnet_corpus_reader._load_lang_data(lang)
@@ -1065,8 +1055,8 @@ class WordNetCorpusReader(CorpusReader):
         return self._synset_from_pos_and_offset(of[-1], int(of[:8]))      
 
     def ss2of(self, ss):
-        ''' return the ID of the synset '''
-        return ("{:08d}-{}".format(ss.offset(), ss.pos()))
+        ''' return the ILI of the synset '''
+        return ( "0"*8 + str(ss.offset()) +"-"+ str(ss.pos()))[-10:]
     
     def _load_lang_data(self, lang):
         ''' load the wordnet data of the requested language from the file to the cache, _lang_data '''
@@ -1094,7 +1084,7 @@ class WordNetCorpusReader(CorpusReader):
     def langs(self):
         ''' return a list of languages supported by Multilingual Wordnet '''
         import os
-        langs = [ 'eng' ]
+        langs = []
         fileids = self._omw_reader.fileids()
         for fileid in fileids:
             file_name, file_extension = os.path.splitext(fileid)
@@ -1185,7 +1175,7 @@ class WordNetCorpusReader(CorpusReader):
     # Loading Lemmas
     #////////////////////////////////////////////////////////////
 
-    def lemma(self, name, lang='eng'):
+    def lemma(self, name, lang='en'):
         '''Return lemma object that matches the name'''
         # cannot simply split on first '.', e.g.: '.45_caliber.a.01..45_caliber'
         separator = SENSENUM_RE.search(name).start()
@@ -1406,7 +1396,7 @@ class WordNetCorpusReader(CorpusReader):
     # Retrieve synsets and lemmas.
     #////////////////////////////////////////////////////////////
 
-    def synsets(self, lemma, pos=None, lang='eng'):
+    def synsets(self, lemma, pos=None, lang='en'):
         """Load all synsets with a given lemma and part of speech tag.
         If no pos is specified, all synsets for all parts of speech
         will be loaded. 
@@ -1415,7 +1405,7 @@ class WordNetCorpusReader(CorpusReader):
         """
         lemma = lemma.lower()
         
-        if lang == 'eng':
+        if lang == 'en':
             get_synset = self._synset_from_pos_and_offset
             index = self._lemma_pos_offset_map
             if pos is None:
@@ -1434,12 +1424,12 @@ class WordNetCorpusReader(CorpusReader):
                 synset_list.append(self.of2ss(l))
             return synset_list
 
-    def lemmas(self, lemma, pos=None, lang='eng'):
+    def lemmas(self, lemma, pos=None, lang='en'):
         """Return all Lemma objects with a name matching the specified lemma
         name and part of speech tag. Matches any part of speech tag if none is
         specified."""
 
-        if lang == 'eng':
+        if lang == 'en':
             lemma = lemma.lower()
             return [lemma_obj
                     for synset in self.synsets(lemma, pos)
@@ -1458,12 +1448,12 @@ class WordNetCorpusReader(CorpusReader):
                 lemmas.append(a)
             return lemmas
 
-    def all_lemma_names(self, pos=None, lang='eng'):
+    def all_lemma_names(self, pos=None, lang='en'):
         """Return all lemma names for all synsets for the given
-        part of speech tag and language or languages. If pos is not specified, all synsets
+        part of speech tag and langauge or languages. If pos is not specified, all synsets
         for all parts of speech will be used."""
 
-        if lang == 'eng':
+        if lang == 'en':
             if pos is None:
                 return iter(self._lemma_pos_offset_map)
             else:
@@ -1522,8 +1512,9 @@ class WordNetCorpusReader(CorpusReader):
                         # adjective satellites are in the same file as
                         # adjectives so only yield the synset if it's actually
                         # a satellite
-                        if synset._pos == ADJ_SAT:
-                            yield synset
+                        if pos_tag == ADJ_SAT:
+                            if synset._pos == pos_tag:
+                                yield synset
 
                         # for all other POS tags, yield all synsets (this means
                         # that adjectives also include adjective satellites)
@@ -1539,59 +1530,11 @@ class WordNetCorpusReader(CorpusReader):
             else:
                 data_file.close()
 
-    def words(self, lang='eng'):
-        """return lemmas of the given language as list of words"""
-        return self.all_lemma_names(lang=lang)
-
-    def license(self, lang='eng'):
-        """Return the contents of LICENSE (for omw)
-           use lang=lang to get the license for an individual language"""
-        if lang == 'eng':
-            return self.open("LICENSE").read()
-        elif lang in self.langs():
-            return self._omw_reader.open("{}/LICENSE".format(lang)).read()
-        elif lang == 'omw':
-            ### under the not unreasonable assumption you don't mean Omwunra-Toqura
-            return self._omw_reader.open("LICENSE").read()
-        else:
-            raise WordNetError("Language is not supported.")
- 
-    def readme(self, lang='omw'):
-        """Return the contents of README (for omw)
-           use lang=lang to get the readme for an individual language"""
-        if lang == 'eng':
-            return self.open("README").read()
-        elif lang in self.langs():
-            return self._omw_reader.open("{}/README".format(lang)).read()
-        elif lang == 'omw':
-            ### under the not unreasonable assumption you don't mean Omwunra-Toqura
-            return self._omw_reader.open("README").read()
-        else:
-            raise WordNetError("Language is not supported.")
-
-    def citation(self, lang='omw'):
-        """Return the contents of citation.bib file (for omw)
-           use lang=lang to get the citation for an individual language"""
-        if lang == 'eng':
-            return self.open("citation.bib").read()
-        elif lang in self.langs():
-            return self._omw_reader.open("{}/citation.bib".format(lang)).read()
-        elif lang == 'omw':
-            ### under the not unreasonable assumption you don't mean Omwunra-Toqura
-            return self._omw_reader.open("citation.bib").read()
-        else:
-            raise WordNetError("Language is not supported.")
-
-
-
     #////////////////////////////////////////////////////////////
     # Misc
     #////////////////////////////////////////////////////////////
     def lemma_count(self, lemma):
         """Return the frequency count for this Lemma"""
-        # Currently, count is only work for English
-        if lemma._lang != 'eng':
-            return 0
         # open the count file if we haven't already
         if self._key_count_file is None:
             self._key_count_file = self.open('cntlist.rev')

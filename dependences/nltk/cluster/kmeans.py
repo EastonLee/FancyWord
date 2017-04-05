@@ -1,10 +1,10 @@
 # Natural Language Toolkit: K-Means Clusterer
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Trevor Cohn <tacohn@cs.mu.oz.au>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
-from __future__ import print_function, unicode_literals, division
+from __future__ import print_function, unicode_literals
 
 import copy
 import random
@@ -165,7 +165,7 @@ class KMeansClusterer(VectorSpaceClusterer):
             centroid = copy.copy(mean)
             for vector in cluster:
                 centroid += vector
-            return centroid / (1+len(cluster))
+            return centroid / (1+float(len(cluster)))
         else:
             if not len(cluster):
                 sys.stderr.write('Error: no centroid defined for empty cluster.\n')
@@ -174,7 +174,7 @@ class KMeansClusterer(VectorSpaceClusterer):
             centroid = copy.copy(cluster[0])
             for vector in cluster[1:]:
                 centroid += vector
-            return centroid / len(cluster)
+            return centroid / float(len(cluster))
 
     def __repr__(self):
         return '<KMeansClusterer means=%s repeats=%d>' % \
