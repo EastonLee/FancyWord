@@ -5,9 +5,12 @@ import os
 import re
 import json
 import subprocess
-sys.path.insert(0, os.path.join(os.path.dirname(
-    os.path.realpath(__file__)), "dependences"))
+from collections import OrderedDict
+package_folder = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, os.path.join(package_folder, "dependences"))
 from nltk.corpus import wordnet as wn
+import nltk
+nltk.data.path.insert(0, os.path.join(package_folder, 'dependences', 'nltk'))
 
 if sublime.version() < '3000':
     # nltk can't run on Python2.6.9, FancyWord only supports SublimeText 3
@@ -18,7 +21,6 @@ else:
     from urllib.request import urlopen
     from urllib.error import HTTPError, URLError
 
-package_folder = os.path.dirname(__file__)
 # word2vec_api_server process
 p = None
 
@@ -182,48 +184,41 @@ class LookUpWordCommand(sublime_plugin.TextCommand):
             return  # nothing selected
         s = sublime.load_settings("FancyWord.sublime-settings") or {}
         lang = s.get('language', 'eng')
-        definitions = {}
+        def_exmp = OrderedDict()
         for w in wn.synsets(phrase, lang=lang):
-            definitions[w.name()] = w.definition()
-        if not definitions:
+            def_exmp[w.name()] = {'def': w.definition(), 'exmp': w.examples()}
+        if not def_exmp:
             sublime.status_message(
                 "FancyWord: can't find definition words for {}!".format(phrase))
             return
-        self.definitions = '<br>'.join(
-            ['<u>' + w + '</u>: ' + d for w, d in definitions.items()])
+        self.def_exmp = []
+        for w, de in def_exmp.items():
+            self.def_exmp.append('<u>' + w + '</u>: ' + de['def'])
+            for e in de['exmp']:
+                self.def_exmp.append('- <i>' + e + '</i>')
+        self.def_exmp = '<br>'.join(self.def_exmp)
         if int(sublime.version()) >= 3070:
-            self.view.show_popup(self.definitions)
+            self.view.show_popup(self.def_exmp)
         else:
             self.print_doc(edit)
-
-    def print_popup(self, edit):
-        """Show message in a popup
-        """
-
-        dlines = self.definitions.splitlines()
-        name = dlines[0]
-        docstring = ''.join(dlines[1:])
-        content = {'name': name, 'content': docstring}
-        self.definitions = None
-        self.view.show_tooltip(content)
 
     def print_doc(self, edit):
         """Print the documentation string into a Sublime Text panel
         """
 
         doc_panel = self.view.window().create_output_panel(
-            'anaconda_documentation'
+            'fancyword_defexmp'
         )
 
         doc_panel.set_read_only(False)
         region = sublime.Region(0, doc_panel.size())
         doc_panel.erase(edit, region)
-        doc_panel.insert(edit, 0, self.definitions)
-        self.definitions = None
+        doc_panel.insert(edit, 0, self.def_exmp)
+        self.def_exmp = None
         doc_panel.set_read_only(True)
         doc_panel.show(0)
         self.view.window().run_command(
-            'show_panel', {'panel': 'output.anaconda_documentation'}
+            'show_panel', {'panel': 'output.fancyword_defexmp'}
         )
 
 

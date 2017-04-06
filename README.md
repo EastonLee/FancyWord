@@ -32,7 +32,7 @@ To solve this problem, I look up the synonyms of a word in dictionary, programma
 
 ## Space Required
 
-Wordnet is part of `nltk` package, which takes about 11 MB on disk. Word2Vec is much bigger if you count its model in, for example the model trained by [Wikipedia Dependency](http://u.cs.biu.ac.il/~yogo/data/syntemb/deps.words.bz2) with 300 dimensions, 174,015 words is 860 MB, or 210 MB after converted to binary form, plus all packages required take another 110 MB, in total at least 320 MB.
+Wordnet is part of `nltk` package, which takes about 11 MB, and plus 43 MB dictionary data. Word2Vec is much bigger if you count its model in, for example the model trained by [Wikipedia Dependency](http://u.cs.biu.ac.il/~yogo/data/syntemb/deps.words.bz2) with 300 dimensions, 174,015 words is 860 MB, or 210 MB after converted to binary form, plus all packages required take another 110 MB, in total at least 320 MB.
 
 Wordnet 和 Word2Vec 所占用的磁盘空间差别很大。Wordnet 是 `nltk` 包的一部分，整个 `ntlk` 只占用 11MB 空间。Word2Vec 则要大得多，如果你算上它所依赖的模型，比如这个用 [Wikipedia Dependency](http://u.cs.biu.ac.il/~yogo/data/syntemb/deps.words.bz2) 方法训练出的具有 300 个维度 174015 个词汇量的模型，占用了 860 MB，如果转化为二进制形式则是 210 MB，再加上所有依赖的包的大小 110MB 左右，总共至少需要 320MB 的空间。
 
