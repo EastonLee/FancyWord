@@ -85,6 +85,14 @@ def wordnet_topn(w, n, lang):
         rst.remove(w)
     return rst[:n]
 
+def is_word2vec_api_server_running():
+    import psutil
+    for pid in psutil.pids():
+        p = psutil.Process(pid)
+        if 'python' in p.name().lower() and len(p.cmdline()) > 1 and "dependences/word2vec-api.py" in p.cmdline()[1]:
+            return True
+    return False
+
 
 class FancyWordCommand(sublime_plugin.TextCommand):
 
@@ -102,7 +110,7 @@ class FancyWordCommand(sublime_plugin.TextCommand):
         self.word2vec_port = self.word2vec_setting.get('port', 5000)
         self.wordnet_enabled = s.get('wordnet', {}).get('enabled', True)
         # when word2vec-api server is dead, restart it
-        if self.word2vec_enabled and (not p or p.poll()):
+        if self.word2vec_enabled and not is_word2vec_api_server_running():
             # ['/usr/local/bin/python', '/Users/easton/Downloads/word2vec-api/word2vec-api.py', '--model', '~/Downloads/deps.words.bin', '--binary', 'true']
             print('FancyWord: word2vec-api server is starting')
             word2vec_api_file_path = os.path.join(
