@@ -1,4 +1,4 @@
 [  
-    { "keys": ["super+k", "super+f"], "command": "fancy_word" },
-    { "keys": ["super+k", "super+d"], "command": "look_up_word" }
+    { "keys": ["super+k", "f"], "command": "fancy_word" },
+    { "keys": ["super+k", "d"], "command": "look_up_word" }
 ]   

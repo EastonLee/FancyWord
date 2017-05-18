@@ -186,9 +186,9 @@ For simplicity's sake, I will call both Word2Vec and Wordnet dictionary, actuall
 
 # Usage 
 
-Move cursor to the word you need to look up, `CMD K + CMD F` for popping the list of FancyWord, `CMD K + CMD D` for looking up the definition of a word in Wordnet dictionary. For now, FancyWord only supports English.
+Move cursor to the word you need to look up, `CMD K + F` for popping the list of FancyWord, `CMD K + D` for looking up the definition of a word in Wordnet dictionary. For now, FancyWord only supports English.
 
-光标移至需要查询的单词，`CMD K + CMD F` 键弹出 FancyWord 的候选词列表，`CMD K + CMD D` 键弹出一个单词在 Wordnet 词典中的定义。目前 FancyWord 只支持英文。
+光标移至需要查询的单词，`CMD K + F` 键弹出 FancyWord 的候选词列表，`CMD K + D` 键弹出一个单词在 Wordnet 词典中的定义。目前 FancyWord 只支持英文。
 
 Notice that the quality of Word2Vec result is determined by the pretrained model, you can download a model [here](https://cdn.eastonlee.com/deps.words.bin), which is trained by Wikipedia corpus and contains 300 dimensions and 174,015 words.
 

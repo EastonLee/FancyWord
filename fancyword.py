@@ -88,9 +88,13 @@ def wordnet_topn(w, n, lang):
 def is_word2vec_api_server_running():
     import psutil
     for pid in psutil.pids():
-        p = psutil.Process(pid)
-        if 'python' in p.name().lower() and len(p.cmdline()) > 1 and "dependences/word2vec-api.py" in p.cmdline()[1]:
-            return True
+        try:
+            p = psutil.Process(pid)
+        except psutil.NoSuchProcess:
+            pass
+        else:
+            if 'python' in p.name().lower() and len(p.cmdline()) > 1 and "dependences/word2vec-api.py" in p.cmdline()[1]:
+                return True
     return False
 
 
@@ -134,7 +138,7 @@ class FancyWordCommand(sublime_plugin.TextCommand):
         try:
             word2vec_rst = word2vec_topn_outproc(phrase, self.topn)
         except URLError:
-            print('FancyWord: word2vec-api server can\'t be reachable')
+            print('FancyWord: word2vec-api server is not reachable')
             print('FancyWord: Will start word2vec-api server')
             word2vec_rst = []
 
