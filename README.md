@@ -6,7 +6,7 @@ FancyWord 是一个辅助用户在英文写作中更好地选词的 SublimeText 
 
 ![FancyWord_Demo](https://cdn.eastonlee.com/FancyWord_Demo.gif)
 
-Welcome to fork, PR or open issues on [GitHub](https://github.com/easton042/FancyWord)
+Welcome to fork, PR or open issues on [GitHub](https://github.com/eastonlee/FancyWord)
 
 If you find it useful, please consider donating.
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=5FBKLLDUX9KKY&lc=US&item_name=EastonLee&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
@@ -170,13 +170,13 @@ Both Word2Vec and Wordnet can only deal with single word, you can't input a phra
     + Package Control - First install Package Control
     + Search for the FancyWord package and install
 + From Source
-    + From Source - Clone the repo to your Sublime Text packages folder, `git clone https://github.com/easton042/FancyWord.git "~/Library/Application Support/Sublime Text 3/Packages/FancyWord"`
+    + From Source - Clone the repo to your Sublime Text packages folder, `git clone https://github.com/eastonlee/FancyWord.git "~/Library/Application Support/Sublime Text 3/Packages/FancyWord"`
 
 + 通过 Sublime Text 3 的 Package Control 安装
     + 首先安装 Package Control
     + 打开 Package Control，搜索并安装 FancyWord
 + 源代码安装
-    + 直接把克隆项目目录到 Sublime Text 3 的 packages 目录，`git clone https://github.com/easton042/FancyWord.git "~/Library/Application Support/Sublime Text 3/Packages/FancyWord"`
+    + 直接把克隆项目目录到 Sublime Text 3 的 packages 目录，`git clone https://github.com/eastonlee/FancyWord.git "~/Library/Application Support/Sublime Text 3/Packages/FancyWord"`
 
 # Setup
 
