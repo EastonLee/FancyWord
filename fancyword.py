@@ -52,8 +52,8 @@ def plugin_unloaded():
         p.terminate()
 
 
-def word2vec_topn_outproc(w, n):
-    url = "http://127.0.0.1:5000/word2vec/most_similar?positive={}&topn={}".format(
+def word2vec_topn_outproc(word2vec_port, w, n):
+    url = "http://127.0.0.1:{}/word2vec/most_similar?positive={}&topn={}".format(word2vec_port,
         w, n)
     req = Request(url, None)
     try:
@@ -123,6 +123,7 @@ class FancyWordCommand(sublime_plugin.TextCommand):
                                          '--model', self.word2vec_model,
                                          '--binary', 'true',
                                          '--port', str(self.word2vec_port)]
+            print(' '.join(self.word2vec_api_command))
             start_subproc(self.word2vec_api_command)
 
     def run(self, edit):
@@ -136,7 +137,7 @@ class FancyWordCommand(sublime_plugin.TextCommand):
             return  # nothing selected
 
         try:
-            word2vec_rst = word2vec_topn_outproc(phrase, self.topn)
+            word2vec_rst = word2vec_topn_outproc(self.word2vec_port, phrase, self.topn)
         except URLError:
             print('FancyWord: word2vec-api server is not reachable')
             print('FancyWord: Will start word2vec-api server')
