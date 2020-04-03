@@ -11,5 +11,5 @@ smart_open
 nltk
 
 # required by word2vec-api
-Flask==0.10.1
+Flask==1.0
 Flask-RESTful==0.2.12
